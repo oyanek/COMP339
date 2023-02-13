@@ -1,6 +1,6 @@
 compile = "cmake --log-level=WARNING -B/tmp/build . && make -s -C /tmp/build"
-run = "/tmp/build/main"
-entrypoint = "src/main.cpp"
+run = "/tmp/build/encoder"
+entrypoint = "src/encoder.cpp"
 
 [debugger]
 support = true
@@ -44,7 +44,7 @@ externalConsole = false
 logging = {}
 miDebuggerPath = "gdb"
 name = "g++ - Build and debug active file"
-program = "/tmp/build/main"
+program = "/tmp/build/encoder"
 request = "launch"
 setupCommands = [
 	{ description = "Enable pretty-printing for gdb", ignoreFailures = true, text = "-enable-pretty-printing" }
