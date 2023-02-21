@@ -108,8 +108,14 @@ int topFreqGuess(string text){
 int main(int argc, char *argv[]) {
   for (int i = 1; i < argc; i++) {
     string optarg = argv[i];
-
-    if (optarg == "-d" || optarg == "--dict") {
+    if((optarg == "-h" || optarg == "--help")) {
+      string help = "Options:\n"\
+      "  -h --help    shows this screen\n"\
+      "  -d --dict    sets path to dictionary location\n"\
+      "  -i --input   sets path to input file\n"\
+      "  -o --output  sets path to output file";
+      cout << help << endl;
+    } else if (optarg == "-d" || optarg == "--dict") {
       arg_dict = argv[++i];
     } else if (optarg == "-i" || optarg == "--input")  {
       arg_input = argv[++i];
