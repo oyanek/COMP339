@@ -1,3 +1,12 @@
 {
-  "files": {}
+  "files": {
+    "src/encoder.cpp": [
+      {
+        "id": "aab0a25c-c4d2-4fef-bc89-f41352f6e750",
+        "line": 11,
+        "version": 1548,
+        "index": 163
+      }
+    ]
+  }
 }

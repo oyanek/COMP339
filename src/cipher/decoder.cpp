@@ -122,7 +122,6 @@ int main(int argc, char *argv[]) {
 
   // Load Dictionary
   loadDictionary();
-  // Generate Sentences
 
   //check for output file
   ofstream output;

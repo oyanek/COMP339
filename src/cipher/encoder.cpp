@@ -1,9 +1,11 @@
 #include <algorithm>
 #include <cctype>
+#include <cstdio>
 #include <cstdlib>
 #include <ctime>
 #include <fstream>
 #include <iostream>
+#include <ostream>
 #include <set>
 #include <string>
 #include <map>
@@ -32,7 +34,17 @@ set<string> word_set;
 void parse_arguments(int argc, char *argv[]) {
   for (int i = 1; i < argc; i++) {
     string arg = argv[i];
-    if ((arg == "-n" || arg == "--lines") && i + 1 < argc) {
+    if((arg == "-h" || arg == "--help")) {
+      string help = "Options:\n"\
+      "  -h --help    shows this screen\n"\
+      "  -n --lines   sets number of generated lines\n"\
+      "  -l --length  sets minimum character length per word\n"\
+      "  -w --words   sets words per line\n"\
+      "  -d --dict    sets path to dictionary location\n"\
+      "  -o --output  sets path to output file";
+      cout << help << endl;
+      line_count = 0;
+    } else if ((arg == "-n" || arg == "--lines") && i + 1 < argc) {
       line_count = atoi(argv[++i]);
     } else if ((arg == "-l" || arg == "--length") && i + 1 < argc) {
       word_length = atoi(argv[++i]);
@@ -99,20 +111,15 @@ string generate_sentence() {
   return sentence;
 }
 
-//core encryption algorithm performed on each char
-char encryptChar(char c, int shift) {
-  if (!isalpha(c)) {
-    return c;
-  }
-  char base = isupper(c) ? 'A' : 'a';
-  return char((c - base + shift) % 26 + base);
-}
-
-//manager function for iterating through a sentence and calling encryptChar 
+//core encrypt logic 
 string encrypt(const string &s, int shift) {
   string result = "";
   for (char c : s) {
-    result += encryptChar(c, shift);
+    if(c != ' '){
+      result += char((c - 'A' + shift) % 26 + 'A');
+    }else{
+      result += ' ';
+    }
   }
   return result;
 }
@@ -132,9 +139,6 @@ int main(int argc, char *argv[]) {
     }
   }
   ostream &out = output_file.empty() ? cout : output;
-
-  //uncomment line below and comment 141 to make a uniform random shift on each sentence, added for posterieties sake
-  //int shift = rand() % 26
   
   //random caesar shift performed on sentences
   for (int i = 0; i < line_count; i++) {
