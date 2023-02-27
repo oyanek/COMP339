@@ -10,6 +10,8 @@
 #include <string>
 #include <map>
 
+#include "decoder.h";
+
 using namespace std;
 
 //map for letter frequency values to perform frequency analysis on
@@ -32,8 +34,30 @@ float arg_threshold = 100.0;
 
 set<string> words;
 
+inline void parse_arguments(int argc, char *argv[]) {
+  for (int i = 1; i < argc; i++) {
+    string optarg = argv[i];
+    if((optarg == "-h" || optarg == "--help")) {
+      string help = "Options:\n"\
+      "  -h --help    shows this screen\n"\
+      "  -d --dict    sets path to dictionary location\n"\
+      "  -i --input   sets path to input file\n"\
+      "  -o --output  sets path to output file";
+      cout << help << endl;
+    } else if (optarg == "-d" || optarg == "--dict") {
+      arg_dict = argv[++i];
+    } else if (optarg == "-i" || optarg == "--input")  {
+      arg_input = argv[++i];
+    } else if (optarg == "-o" || optarg == "--output") {
+      arg_output = argv[++i];
+    } else if (optarg == "--threshold") {
+      arg_threshold = stof(argv[++i]);
+    }
+  }
+}
+
 //Checks for any characters that are not part of the alphabet
-bool isAlphabetic(const string & word) {
+inline bool is_alphabetic(const string & word) {
   for (char c : word) {
     if (!isalpha(c)) {
       return false;
@@ -43,7 +67,7 @@ bool isAlphabetic(const string & word) {
 }
 
 //load dictionary, error message if dictionary fails to open
-void loadDictionary() {
+inline void loadDictionary() {
   ifstream dict_file(arg_dict);
 
   if (!dict_file.is_open()) {
@@ -54,7 +78,7 @@ void loadDictionary() {
 // Discards bad words and transforms good words to uppercase before insertion
   string word;
   while (dict_file >> word) {
-    if (isAlphabetic(word)) {
+    if (is_alphabetic(word)) {
       transform(word.begin(), word.end(), word.begin(), ::toupper);
       words.insert(word);
     }
@@ -105,99 +129,3 @@ int topFreqGuess(string text){
   return (((maxChar-'A')-('E'-'A') +26) %26);
 }
 
-int main(int argc, char *argv[]) {
-  for (int i = 1; i < argc; i++) {
-    string optarg = argv[i];
-    if((optarg == "-h" || optarg == "--help")) {
-      string help = "Options:\n"\
-      "  -h --help    shows this screen\n"\
-      "  -d --dict    sets path to dictionary location\n"\
-      "  -i --input   sets path to input file\n"\
-      "  -o --output  sets path to output file";
-      cout << help << endl;
-    } else if (optarg == "-d" || optarg == "--dict") {
-      arg_dict = argv[++i];
-    } else if (optarg == "-i" || optarg == "--input")  {
-      arg_input = argv[++i];
-    } else if (optarg == "-o" || optarg == "--output") {
-      arg_output = argv[++i];
-    } else if (optarg == "--threshold") {
-      arg_threshold = stof(argv[++i]);
-    }
-  }
-
-  // Load Dictionary
-  loadDictionary();
-
-  //check for output file
-  ofstream output;
-  if (!arg_output.empty()) {
-    output.open(arg_output);
-    if (!output.is_open()) {
-      cerr << "Failed to open output file: " << arg_output << endl;
-      return 1;
-    }
-  }
-
-  //check for input file
-  ifstream input;
-  if (!arg_input.empty()) {
-    input.open(arg_input);
-    if (!output.is_open()) {
-      cerr << "Failed to open input file: " << arg_input << endl;
-      return 1;
-    }
-  }
-
-  ostream &out = arg_output.empty() ? cout : output;
-
-  //shift manager
-  string line;
-  bool firstRun = true;
-  while (getline(input.is_open() ? input : cin, line)) {
-    int freq_shift = 0;
-    int best_shift = -1;
-    float best_ratio = 0;
-    
-    for (int shift = 0; shift < 26; shift++) {
-      float ratio = 0;
-      int total = 0;
-
-      istringstream line_stream(line);
-      string word;
-      string mash;
-
-      while (line_stream >> word) {
-        mash += word;
-        total++;
-        string decoded = decrypt(word, shift);
-        if (!words.count(decoded))
-          continue;
-        cout << decoded;
-        cout << " ";
-        ratio++;
-      }
-
-      freq_shift = topFreqGuess(mash);
-      
-      ratio /= total;
-      if (ratio > best_ratio) {
-        best_ratio = ratio;
-        best_shift = shift;
-      }
-    }
-
-    // Check if the threshold is reached, return -1 if not met
-    if (best_ratio * 100 >= arg_threshold && freq_shift == best_shift) {
-      out << best_shift << " same as freq shift"<< endl;
-    } else if (best_ratio * 100 >= arg_threshold){
-      out << best_shift << endl;
-    } else {
-      out << -1 << endl;
-    }
-
-    cout << endl;
-  }
-
-  return 0;
-}

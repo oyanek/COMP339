@@ -1,6 +1,6 @@
 compile = "cmake --log-level=WARNING -B/tmp/build . && make -s -C /tmp/build"
-run = "/tmp/build/bin/encoder"
-entrypoint = "encoder.cpp"
+run = "/tmp/build/bin/cipher_tests"
+entrypoint = "encodertest.cpp"
 
 [debugger]
 support = true

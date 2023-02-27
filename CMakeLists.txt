@@ -29,6 +29,10 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0")
 
 add_subdirectory(src/cipher)
 
+add_subdirectory(src/bloom_filter)
+
+enable_testing()
+
 include_directories(include)
 
 add_custom_target(

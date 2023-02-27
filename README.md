@@ -1,5 +1,9 @@
 Our project consists of an encode and decode feature that that takes input derived from the aspell dictionary. From the command line, you can set number of lines, minimum word length, dictionary, output file, and words per line. The encoder removes all non-alphabetic characters and converts lowercase to uppercase. Sentences are randomly created and shifted. Output is sent to a txt file. Decoder takes input from the encoder's output and performs a decrypt to finds keys to decrypt each sentence. Keys are provided in an output file as well as a frequency analysis. The larger the intial data set, the more accurate the frequency analysis is. Tests are currently in the works and will be available by next class meeting. 
 
+## HOW TO RUN THE ENCODER AND DECODER:
+/tmp/build/bin/encoder -h
+/tmp/build/bin/decoder -h
+
 ## SOURCES USED:
 ### For Encrypt and Decrypt Mod Equation: 
 - https://en.wikipedia.org/wiki/Caesar_cipher

@@ -9,9 +9,11 @@
 #include <set>
 #include <string>
 #include <map>
+#include <stdio.h>
+#include <stdlib.h>
+#include "encoder.h"
 
 using namespace std;
-
 
 //Default values for undeclared command line args
 const int DEFAULT_LINE_COUNT = 1;
@@ -73,7 +75,7 @@ void load_dictionary() {
   ifstream dict_file(dictionary);
   if (!dict_file.is_open()) {
     cerr << "Failed to open dictionary file: " << dictionary << endl;
-    exit(1);
+    exit(1); // return false} return true at end
   }
 
   string word;
@@ -122,32 +124,4 @@ string encrypt(const string &s, int shift) {
     }
   }
   return result;
-}
-
-int main(int argc, char *argv[]) {
-  srand(time(0));
-  parse_arguments(argc, argv);
-  load_dictionary();
-
-  //output file check
-  ofstream output;
-  if (!output_file.empty()) {
-    output.open(output_file);
-    if (!output.is_open()) {
-      cerr << "Failed to open output file: " << output_file << endl;
-      return 1;
-    }
-  }
-  ostream &out = output_file.empty() ? cout : output;
-  
-  //random caesar shift performed on sentences
-  for (int i = 0; i < line_count; i++) {
-    int shift = 1 + rand() % 26;
-    string sentence = generate_sentence();
-    cout << sentence << endl;
-    sentence = encrypt(sentence, shift);
-    out << sentence << endl;
-  }
-
-  return 0;
 }
