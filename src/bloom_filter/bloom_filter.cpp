@@ -50,9 +50,8 @@ inline void loadDictionary() {
       transform(word.begin(), word.end(), word.begin(), ::toupper);
       words.insert(word);
     }
-  }
+  } }
 */
-}
 
 void add(){}
 /*
