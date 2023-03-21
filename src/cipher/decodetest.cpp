@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "decoder.h"
+#include "decoder.hpp"
 
 TEST(decoder_test, is_alphabetic_test_true) {
   ASSERT_TRUE(is_alphabetic("test"));

@@ -3,7 +3,7 @@
 #include <ostream>
 #include <string>
 
-#include "encoder.h"
+#include "encoder.hpp"
 
 
 TEST(encoder_test, is_alphabetic_test_true) {

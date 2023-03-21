@@ -1,104 +1,128 @@
 #include <algorithm>
+#include <cmath>
+#include <iterator>
+#include <sstream>
 #include <stdlib.h>
-#include "bloom_filter.h"
+#include "bloom_filter.hpp"
 #include <iostream>
 #include <fstream>
 #include <bitset>
 #include <string>
 #include <vector>
-
+#include <iomanip>
 #include <openssl/md5.h>
+#include <openssl/sha.h>
 
-using namespace std;
+BloomFilter::BloomFilter(int m, int k) {
+  bits = m;
+  hashf = k;
+  dataV.resize(bits / (sizeof(unsigned long)*8), 0);
+  size = dataV.size();
+}
 
-int hashf = 0;
-int bits = 0;
-std::string dict = "";
+std::string dict = "wordlist.en.txt";
+int n = 0;
 
-inline void parse_arguments(int argc, char *argv[]) {
-  for (int i = 1; i < argc; i++) {
-    string optarg = argv[i];
-    if((optarg == "--help")) {
-      string help = "Options:\n"\
-      "  -h --help    shows this screen\n"\
-      "  -d --dict    sets path to dictionary location\n"\
-      "  -i --input   sets path to input file\n"\
-      "  -o --output  sets path to output file";
-      cout << help << endl;
-    } else if (optarg == "-d" || optarg == "--dict") {
-      dict = argv[++i];
-    } else if (optarg == "-h" || optarg == "--hashf")  {
-      hashf = atoi(argv[++i]);
-    } else if (optarg == "-b" || optarg == "--bits") {
-      bits = atoi(argv[++i]);
+BloomFilter::~BloomFilter() {} 
+
+int hash_fn(string s) {
+  hash<string> str_hash;
+  return str_hash(s);
+}
+
+long long int BloomFilter::h1(string word) {
+  unsigned char hash[MD5_DIGEST_LENGTH];
+  MD5((unsigned char*)word.c_str(), word.length(), hash);
+  string s((char*)hash, MD5_DIGEST_LENGTH);
+  // cout << "hash : " << abs(hash_fn(s)) << " data size : " << size << " new hash size : " << hash_fn(s)%size << endl;
+  return abs(hash_fn(s)%size);
+}
+
+long long int BloomFilter::h2(string word) {
+  unsigned char hash[SHA256_DIGEST_LENGTH];
+  SHA256((unsigned char*)word.c_str(), word.length(), hash);
+  string s((char*)hash, SHA256_DIGEST_LENGTH);
+  return abs(hash_fn(s)%size);
+}
+
+void BloomFilter::add(string element){
+  if(hashf != 1 && hashf != 2){
+    cerr << "No hash function chosen, please enter 1 or 2" <<endl;
+  } else if(hashf == 1){
+    int hash1 = h1(element) % bits;
+    dataV[hash1]++;
+    //cout << "first hash : " << hash1 << " value at dataV : " << dataV[hash1] << endl;
+  } else if (hashf == 2){
+    int hash1 = h1(element) % bits;
+    int hash2 = h2(element) % bits;
+    dataV[hash1]++;
+    dataV[hash2]++;
+  }
+  n += 1;
+}
+
+string BloomFilter::search(string element){
+  if(hashf != 1 && hashf != 2){
+    cerr << "No hash function chosen, please enter 1 or 2" << endl;
+  } else if(hashf == 1){
+    int hash1 = h1(element) % bits;
+    //cout << "second hash : " << hash1 << " value at dataV : " << dataV[hash1] << endl;
+    if(dataV[hash1] == 0){
+      return "Not in Bloom Filter";
+    }
+  } else if (hashf == 2){
+    int hash1 = h1(element) % bits;
+    int hash2 = h2(element) % bits;
+    //cout << "second hash : " << hash1 << " value at dataV : " << dataV[hash1] << " n: " << n << " data size : " << dataV.size() << endl;
+    if(dataV[hash1] == 0 || dataV[hash2] == 0){
+      return "Not in Bloom Filter";
     }
   }
+  double prob = pow(1.0 - pow(1.0 - (1.0/bits), hashf * n), hashf);
+  stringstream ss;
+  ss << fixed << setprecision(10) << prob;
+  return "Might be in Bloom Filter with false positive probablity " + ss.str();
 }
 
-/*
-inline void loadDictionary() {
-  ifstream dict_file(dict);
+// unsigned int hash1(string s) {
+//   unsigned int hash = 5381;
+//   for (unsigned int i = 0; i < s.size(); i++) {
+//     hash = ((hash << 5) + hash) + s[i];
+//   }
+//   return hash;
+// }
 
-  if (!dict_file.is_open()) {
-    cerr << "Failed to open dictionary file: " << dict << endl;
-    exit(1);
-  }
-// Discards bad words and transforms good words to uppercase before insertion
-  string word;
-  while (dict_file >> word) {
-    if (is_alphabetic(word)) {
-      transform(word.begin(), word.end(), word.begin(), ::toupper);
-      words.insert(word);
-    }
-  } }
-*/
+// unsigned int hash2(string s) {
+//   unsigned int hash = 0;
+//   for (int i = 0; i < s.size(); i++) {
+//     hash = s[i] + (hash << 6) + (hash << 16) - hash;
+//   }
+//   return hash;
+// }
 
-void add(){}
-/*
-    def insert(self, element):
-        if self.k == 1:
-            hash1 = h1(element) % self.m
-            self.data[hash1] = 1
-        elif self.k == 2:
-            hash1 = h1(element) % self.m
-            hash2 = h2(element) % self.m
-            self.data[hash1] = 1
-            self.data[hash2] = 1
-        self.n += 1
-  */
+// BloomFilter::BloomFilter(int m, int k) {
+//   num_bits = m;
+//   num_hash = k;
+//   bits = new bitset<MAX_BITS>(0);
+// }
 
-/*
-def insert(string element){
+// BloomFilter::~BloomFilter() { delete bits; }
 
-}
-*/
+// void BloomFilter::add(string s) {
+//   for (int i = 0; i < num_hash; i++) {
+//     unsigned int hashval = hash1(s) + i * hash2(s);
+//     hashval %= num_bits;
+//     bits->set(hashval, true);
+//   }
+// }
 
-string search(){
-  return "in dev";
-}
-/*
-def search(self, element):
-        if self.k == 1:
-            hash1 = h1(element) % self.m
-            if self.data[hash1] == 0:
-                return "Not in Bloom Filter"
-        elif self.k == 2:
-            hash1 = h1(element) % self.m
-            hash2 = h2(element) % self.m
-            if self.data[hash1] == 0 or self.data[hash2] == 0:
-                return "Not in Bloom Filter"
-        prob = (1.0 - ((1.0 - 1.0/self.m)**(self.k*self.n))) ** self.k
-        return "Might be in Bloom Filter with false positive probability "+str(prob)
-
-*/
-
-/*
-def h1(w):
-    h = hashlib.md5(w)
-    return hash(h.digest().encode('base64')[:6])%10
-
-def h2(w):
-    h = hashlib.sha256(w)
-    return hash(h.digest().encode('base64')[:6])%10
-*/
-
+// bool BloomFilter::contains(string s) {
+//   for (int i = 0; i < num_hash; i++) {
+//     unsigned int hashval = hash1(s) + i * hash2(s);
+//     hashval %= num_bits;
+//     if (bits->test(hashval) == false) {
+//       return false;
+//     }
+//   }
+//   return true;
+// }

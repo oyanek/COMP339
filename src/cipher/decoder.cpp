@@ -10,7 +10,7 @@
 #include <string>
 #include <map>
 
-#include "decoder.h";
+#include "decoder.hpp"
 
 using namespace std;
 

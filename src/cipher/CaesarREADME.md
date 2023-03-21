@@ -3,6 +3,7 @@ Our project consists of an encode and decode feature that that takes input deriv
 ## HOW TO RUN THE ENCODER AND DECODER:
 /tmp/build/bin/encoder -h
 /tmp/build/bin/decoder -h
+/tmp/build/bin/bloom_filter
 
 ## SOURCES USED:
 ### For Encrypt and Decrypt Mod Equation: 
