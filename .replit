@@ -1,6 +1,6 @@
 compile = "cmake --log-level=WARNING -B/tmp/build . && make -s -C /tmp/build"
 run = "/tmp/build/bin/bloom_filter"
-entrypoint = "bloom_main.cpp"
+entrypoint = "bloom_test.cpp"
 # run = "/tmp/build/bin/cipher_tests"
 # entrypoint = "encodertest.cpp"
 

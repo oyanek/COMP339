@@ -18,6 +18,13 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
+FetchContent_Declare(
+        cli11
+        GIT_REPOSITORY https://github.com/CLIUtils/CLI11.git
+        GIT_TAG        v2.1.2
+)
+FetchContent_MakeAvailable(cli11)
+
 SET(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 SET(CMAKE_CXX_COMPILER "clang++")
 SET(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES  ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})

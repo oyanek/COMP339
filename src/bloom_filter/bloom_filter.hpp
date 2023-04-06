@@ -3,6 +3,7 @@
 
 #include <bitset>
 #include <string>
+#include <vector>
 
 ///use vector of bool std::vector<bool>
 
@@ -13,15 +14,17 @@ const int MAX_BITS = 10000000;
 unsigned int hash1(string s);
 unsigned int hash2(string s);
 
+
 class BloomFilter {
  public:
   BloomFilter(int, int);
-  ~BloomFilter();
-  void add(string);
+  bool add(string);
   std::string search(string);
   long long int h1(string word);
   long long int h2(string word);
-
+  int distinct_word_count();
+  bool word_count_check(string word);
+  int word_count();
 
  private:
   int hashf;

@@ -9,12 +9,15 @@ enable_testing()
 add_library(
   lib
   bloom_filter.cpp
+  
 )
 
 add_executable(
   bloom_filter
   bloom_main.cpp
 )
+
+#target_link_libraries(bloom_filter CLI11::CLI11)
 
 add_executable(
   bloom_test
@@ -26,6 +29,8 @@ target_link_libraries(
   lib
   gtest_main
 )
+
+
 
 target_include_directories(lib PUBLIC ${OPENSSL_INCLUDE_DIR})
 
